@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -10,22 +11,31 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-
 export class Login {
   username = '';
   password = '';
   error = '';
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {
+    if (authService.isLoggedIn()) {
+      router.navigate(['/dashboard']);
+    }
+  }
 
   onLogin() {
+    this.error = '';
     this.authService.login({
       username: this.username,
       passwordHash: this.password
     }).subscribe({
-      next: (res: any) => {
-        console.log(res);
-        localStorage.setItem('token', res.token);
+      next: (res) => {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('token', res.accessToken);
+        }
+        this.router.navigate(['/dashboard']);
       },
       error: () => {
         this.error = 'Invalid credentials';

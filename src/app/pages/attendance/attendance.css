@@ -1,0 +1,64 @@
+:host {
+  display: block;
+  min-height: 100px;
+}
+
+.attendance-page {
+  display: block;
+  width: 100%;
+}
+
+h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.error-box {
+  padding: 16px;
+  border: 1px solid #e74c3c;
+  border-radius: 8px;
+  background: #fef5f5;
+}
+
+.error-hint {
+  color: #666;
+  font-size: 14px;
+  margin: 12px 0;
+}
+
+.retry-btn {
+  padding: 10px 20px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.retry-btn:hover {
+  background: #2980b9;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+th {
+  background: #f5f5f5;
+  font-weight: 600;
+}

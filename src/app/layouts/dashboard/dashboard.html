@@ -1,0 +1,64 @@
+<div class="dashboard">
+  <header class="header">
+    <button class="menu-btn" (click)="toggleSidebar()" aria-label="Toggle menu">
+      <span class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+    <h1 class="header-title">Patient Record</h1>
+  </header>
+
+  <div class="backdrop" [class.open]="sidebarOpen" (click)="closeSidebar()"></div>
+
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <h2 class="sidebar-title">Patient Record</h2>
+    <nav class="nav">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      @if (!showPatientFeatures) {
+        <a [routerLink]="['/dashboard', 'employees']" routerLinkActive="active">Employees</a>
+        <a [routerLink]="['/dashboard', 'departments']" routerLinkActive="active">Departments</a>
+        <a [routerLink]="['/dashboard', 'attendance']" routerLinkActive="active">Attendance</a>
+      }
+      @if (showPatientFeatures) {
+        <a [routerLink]="['/dashboard', 'patients']" routerLinkActive="active">Patients</a>
+        <a [routerLink]="['/dashboard', 'patient-visits']" routerLinkActive="active">Patient Visits</a>
+      }
+    </nav>
+    <button class="btn-logout" (click)="logout()">Logout</button>
+  </aside>
+
+  <main class="content">
+    @switch (currentView) {
+      @case ('home') {
+        <app-home />
+      }
+      @case ('employees') {
+        @if (!showPatientFeatures) {
+          <app-employees />
+        }
+      }
+      @case ('departments') {
+        @if (!showPatientFeatures) {
+          <app-departments />
+        }
+      }
+      @case ('attendance') {
+        @if (!showPatientFeatures) {
+          <app-attendance />
+        }
+      }
+      @case ('patients') {
+        @if (showPatientFeatures) {
+          <app-patients />
+        }
+      }
+      @case ('patient-visits') {
+        @if (showPatientFeatures) {
+          <app-patient-visits />
+        }
+      }
+    }
+  </main>
+</div>

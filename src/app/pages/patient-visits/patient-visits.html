@@ -1,0 +1,167 @@
+<div class="patient-visits-page">
+  <h2>Patient Visits</h2>
+
+  @if (!hasSearched) {
+    <p class="search-prompt">Search the patient</p>
+    <div class="search-row">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Patient ID (optional)"
+        [(ngModel)]="patientIdInput"
+        (keyup.enter)="onSearch()"
+      />
+      <button type="button" class="btn-search" (click)="onSearch()">Search</button>
+    </div>
+  } @else {
+    <div class="search-row">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Patient ID (optional)"
+        [(ngModel)]="patientIdInput"
+        (keyup.enter)="onSearch()"
+      />
+      <button type="button" class="btn-search" (click)="onSearch()">Search</button>
+    </div>
+
+    @if (loading) {
+      <p>Loading...</p>
+    } @else if (error) {
+      <div class="error-box">
+        <p class="error">{{ error }}</p>
+        @if (isNetworkError) {
+          <p class="error-hint">Ensure the backend is running and you are logged in. Try logging out and back in, then retry.</p>
+        }
+        <button class="retry-btn" (click)="loadPage(1)">Retry</button>
+      </div>
+    } @else {
+      <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Patient Id</th>
+            <th>Patient Name</th>
+            <th>Card ID</th>
+            <th>Visit Date</th>
+            <th>Visit Time</th>
+            <th>Total Amount</th>
+            <th>Received Amount</th>
+            <th>Balance</th>
+            <th>Treatment</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (rec of records; track rec.id || $index) {
+            <tr>
+              <td>{{ rec.id }}</td>
+              <td>{{ rec.patientId }}</td>
+              <td>{{ rec.patientName }}</td>
+              <td>{{ rec.cardUid || '-' }}</td>
+              <td>{{ formatDate(rec.visitDate) }}</td>
+              <td>{{ formatTime(rec.visitTime) || '-' }}</td>
+              <td>{{ rec.totalAmount ?? 0 }}</td>
+              <td>{{ rec.receivedAmount ?? 0 }}</td>
+              <td>{{ rec.balance ?? 0 }}</td>
+              <td>
+                <button
+                  type="button"
+                  class="btn-view-treatment"
+                  [disabled]="!hasTreatmentsForVisit(rec.id)"
+                  (click)="openTreatmentModal(rec)"
+                >
+                  View Treatment
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="10">No patient visits found</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+      @if (totalCount > 0) {
+        <div class="pagination">
+          <span class="pagination-info">
+            Showing {{ fromRecord }}–{{ toRecord }} of {{ totalCount }}
+          </span>
+          <span class="pagination-controls">
+            <button type="button" class="btn-page" [disabled]="currentPage <= 1" (click)="prevPage()">Previous</button>
+            <span class="page-num">Page {{ currentPage }} of {{ totalPages }}</span>
+            <button type="button" class="btn-page" [disabled]="currentPage >= totalPages" (click)="nextPage()">Next</button>
+          </span>
+        </div>
+      }
+    }
+  }
+</div>
+
+@if (showTreatmentModal && selectedVisit) {
+  <div class="modal-backdrop" (click)="closeTreatmentModal()"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="treatment-modal-title">
+    <div class="modal-header">
+      <h3 id="treatment-modal-title">Treatment Records</h3>
+      <button type="button" class="modal-close" (click)="closeTreatmentModal()" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p class="visit-info">Visit Id: {{ selectedVisit.id }} | Patient: {{ selectedVisit.patientName }}</p>
+      @if (getTreatmentsForVisit(selectedVisit.id).length === 0) {
+        <p class="empty-treatments">No treatment records.</p>
+      } @else {
+        <div class="treatments-list">
+          @for (t of getTreatmentsForVisit(selectedVisit.id); track t.id; let i = $index) {
+            <div class="treatment-card">
+              <h4>Treatment #{{ i + 1 }}</h4>
+              <dl>
+                <dt>Treatments</dt>
+                <dd>{{ t.treatments || '-' }}</dd>
+                <dt>Doctor Comment</dt>
+                <dd>{{ t.doctorComment || '-' }}</dd>
+                <dt>Patient Feedback</dt>
+                <dd>{{ t.patientFeedback || '-' }}</dd>
+                <dt>Allergies</dt>
+                <dd>{{ t.allergies || '-' }}</dd>
+                <dt>Map X-ray</dt>
+                <dd>
+                  <span class="image-links">
+                    <button type="button" class="link-btn" [disabled]="!t.mapXray" (click)="t.mapXray && openImageViewer(t.mapXray, 'Map X-ray')">View</button>
+                  </span>
+                  @if (!t.mapXray) {
+                    <span class="no-image">No image</span>
+                  }
+                </dd>
+                <dt>Map Prescription</dt>
+                <dd>
+                  <span class="image-links">
+                    <button type="button" class="link-btn" [disabled]="!t.mapPrescription" (click)="t.mapPrescription && openImageViewer(t.mapPrescription, 'Map Prescription')">View</button>
+                  </span>
+                  @if (!t.mapPrescription) {
+                    <span class="no-image">No image</span>
+                  }
+                </dd>
+              </dl>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}
+
+@if (viewerImageUrl) {
+  <div class="viewer-backdrop" (click)="closeImageViewer()" role="button" tabindex="0" aria-label="Close image"></div>
+  <div class="viewer-overlay" role="dialog" aria-modal="true" [attr.aria-label]="viewerTitle">
+    <div class="viewer-header">
+      <h3 class="viewer-title">{{ viewerTitle }}</h3>
+      <button type="button" class="viewer-close" (click)="closeImageViewer()" aria-label="Close">&times;</button>
+    </div>
+    <div class="viewer-body" (click)="$event.stopPropagation()">
+      <img [src]="viewerImageUrl" [alt]="viewerTitle" class="viewer-img" />
+      <button type="button" class="viewer-back-btn" (click)="closeImageViewer()">Back to treatment</button>
+    </div>
+  </div>
+}
