@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Record-management-mobile-app": {
+    "record-management-mobile-app": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -55,16 +55,16 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular/build:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {
-              "buildTarget": "Record-management-mobile-app:build:production"
+              "buildTarget": "record-management-mobile-app:build:production"
             },
             "development": {
-              "buildTarget": "Record-management-mobile-app:build:development"
+              "buildTarget": "record-management-mobile-app:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -90,6 +90,7 @@
       }
     }
   },
+  "defaultProject": "record-management-mobile-app",
   "cli": {
     "analytics": "bae15c52-2cb3-4e42-8fa3-b0e036cc4a84"
   }

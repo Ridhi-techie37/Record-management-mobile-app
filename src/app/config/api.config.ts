@@ -24,6 +24,7 @@ export const API_CONFIG = {
     patientsPaged: '/api/Patient/paged',
     patientVisits: '/api/PatientVisit',
     patientVisitsPaged: '/api/PatientVisit/paged',
-    patientTreatments: '/api/PatientTreatment'
+    patientTreatments: '/api/PatientTreatment',
+    patientTreatmentMasterByPatient: '/api/PatientTreatmentMaster/by-patient'
   }
 };

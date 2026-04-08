@@ -24,6 +24,7 @@
       @if (showPatientFeatures) {
         <a [routerLink]="['/dashboard', 'patients']" routerLinkActive="active">Patients</a>
         <a [routerLink]="['/dashboard', 'patient-visits']" routerLinkActive="active">Patient Visits</a>
+        <a [routerLink]="['/dashboard', 'patient-treatments']" routerLinkActive="active">Patient Treatments</a>
       }
     </nav>
     <button class="btn-logout" (click)="logout()">Logout</button>
@@ -57,6 +58,11 @@
       @case ('patient-visits') {
         @if (showPatientFeatures) {
           <app-patient-visits />
+        }
+      }
+      @case ('patient-treatments') {
+        @if (showPatientFeatures) {
+          <app-patient-treatments />
         }
       }
     }

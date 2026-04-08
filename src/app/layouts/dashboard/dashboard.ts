@@ -11,13 +11,14 @@ import { Departments } from '../../pages/departments/departments';
 import { AttendancePage } from '../../pages/attendance/attendance';
 import { Patients } from '../../pages/patients/patients';
 import { PatientVisits } from '../../pages/patient-visits/patient-visits';
+import { PatientTreatments } from '../../pages/patient-treatments/patient-treatments';
 
-type DashboardView = 'home' | 'employees' | 'departments' | 'attendance' | 'patients' | 'patient-visits';
+type DashboardView = 'home' | 'employees' | 'departments' | 'attendance' | 'patients' | 'patient-visits' | 'patient-treatments';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, Home, Employees, Departments, AttendancePage, Patients, PatientVisits],
+  imports: [CommonModule, RouterModule, Home, Employees, Departments, AttendancePage, Patients, PatientVisits, PatientTreatments],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
@@ -48,7 +49,14 @@ export class Dashboard implements OnDestroy {
 
   private updateViewFromUrl(url: string): void {
     const path = url.split('?')[0];
-    if (path.endsWith('patient-visits') || path.includes('/patient-visits')) {
+    if (path.endsWith('patient-treatments') || path.includes('/patient-treatments')) {
+      if (this.showPatientFeatures) {
+        this.currentView = 'patient-treatments';
+      } else {
+        this.currentView = 'home';
+        this.router.navigate(['/dashboard'], { replaceUrl: true });
+      }
+    } else if (path.endsWith('patient-visits') || path.includes('/patient-visits')) {
       if (this.showPatientFeatures) {
         this.currentView = 'patient-visits';
       } else {
