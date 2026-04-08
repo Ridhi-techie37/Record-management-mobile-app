@@ -1,0 +1,70 @@
+<h2>Patients</h2>
+
+@if (!loading && !error) {
+  <div class="search-row">
+    <input
+      type="search"
+      class="search-input"
+      placeholder="Search by Id, Name, Phone..."
+      [(ngModel)]="searchQuery"
+      (keyup.enter)="onSearch()"
+    />
+    <button type="button" class="btn-search" (click)="onSearch()">Search</button>
+  </div>
+}
+
+@if (loading) {
+  <p>Loading...</p>
+} @else if (error) {
+  <p class="error">{{ error }}</p>
+} @else {
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Patient Id</th>
+          <th>Name</th>
+          <th>Phone 1</th>
+          <th>Phone 2</th>
+          <th>Age</th>
+          <th>DOB</th>
+          <th>Gender</th>
+          <th>Email</th>
+          <th>Card ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of patients; track p.patientId || $index) {
+          <tr>
+            <td>{{ p.patientId }}</td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.phoneNumber1 }}</td>
+            <td>{{ p.phoneNumber2 || '-' }}</td>
+            <td>{{ p.age }}</td>
+            <td>{{ p.dob }}</td>
+            <td>{{ p.gender }}</td>
+            <td>{{ p.email || '-' }}</td>
+            <td>{{ p.cardUid || '-' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="9">{{ searchQuery ? 'No matching patients' : 'No patients found' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (totalCount > 0) {
+    <div class="pagination">
+      <span class="pagination-info">
+        Showing {{ fromRecord }}–{{ toRecord }} of {{ totalCount }}
+      </span>
+      <span class="pagination-controls">
+        <button type="button" class="btn-page" [disabled]="currentPage <= 1" (click)="prevPage()">Previous</button>
+        <span class="page-num">Page {{ currentPage }} of {{ totalPages }}</span>
+        <button type="button" class="btn-page" [disabled]="currentPage >= totalPages" (click)="nextPage()">Next</button>
+      </span>
+    </div>
+  }
+}

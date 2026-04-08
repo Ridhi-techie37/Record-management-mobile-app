@@ -1,0 +1,46 @@
+<div class="attendance-page">
+  <h2>Attendance Records</h2>
+
+  @if (loading) {
+  <p>Loading...</p>
+} @else if (error) {
+  <div class="error-box">
+    <p class="error">{{ error }}</p>
+    @if (isNetworkError) {
+  <p class="error-hint">Ensure the backend is running on port 51100 and you are logged in. Try logging out and back in, then retry.</p>
+}
+    <button class="retry-btn" (click)="loadAttendance()">Retry</button>
+  </div>
+} @else {
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Emp Id</th>
+          <th>Employee Name</th>
+          <th>Date</th>
+          <th>Punch In</th>
+          <th>Punch Out</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (rec of records; track rec.id || $index) {
+          <tr>
+            <td>{{ rec.id }}</td>
+            <td>{{ rec.empId }}</td>
+            <td>{{ rec.empName }}</td>
+            <td>{{ rec.date }}</td>
+            <td>{{ formatTime(rec.punchInTime) }}</td>
+            <td>{{ formatTime(rec.punchOutTime) || '-' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6">No attendance records found</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+</div>
