@@ -25,6 +25,7 @@ export const API_CONFIG = {
     patientVisits: '/api/PatientVisit',
     patientVisitsPaged: '/api/PatientVisit/paged',
     patientTreatments: '/api/PatientTreatment',
-    patientTreatmentMasterByPatient: '/api/PatientTreatmentMaster/by-patient'
+    patientTreatmentMasterByPatient: '/api/PatientTreatmentMaster/by-patient',
+    smileScans: '/api/v1/smile-scans'
   }
 };

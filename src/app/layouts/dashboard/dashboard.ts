@@ -12,13 +12,14 @@ import { AttendancePage } from '../../pages/attendance/attendance';
 import { Patients } from '../../pages/patients/patients';
 import { PatientVisits } from '../../pages/patient-visits/patient-visits';
 import { PatientTreatments } from '../../pages/patient-treatments/patient-treatments';
+import { SmileIntelligence } from '../../pages/smile-intelligence/smile-intelligence';
 
-type DashboardView = 'home' | 'employees' | 'departments' | 'attendance' | 'patients' | 'patient-visits' | 'patient-treatments';
+type DashboardView = 'home' | 'employees' | 'departments' | 'attendance' | 'patients' | 'patient-visits' | 'patient-treatments' | 'smile-intelligence';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, Home, Employees, Departments, AttendancePage, Patients, PatientVisits, PatientTreatments],
+  imports: [CommonModule, RouterModule, Home, Employees, Departments, AttendancePage, Patients, PatientVisits, PatientTreatments, SmileIntelligence],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
@@ -47,9 +48,37 @@ export class Dashboard implements OnDestroy {
     this.routerSub?.unsubscribe();
   }
 
+  get headerTitle(): string {
+    switch (this.currentView) {
+      case 'patients':
+        return 'Patients';
+      case 'patient-visits':
+        return 'Patient Visits';
+      case 'patient-treatments':
+        return 'Patient Treatments';
+      case 'smile-intelligence':
+        return 'Smile Intelligence';
+      case 'employees':
+        return 'Employees';
+      case 'departments':
+        return 'Departments';
+      case 'attendance':
+        return 'Attendance';
+      default:
+        return 'Patient Record';
+    }
+  }
+
   private updateViewFromUrl(url: string): void {
     const path = url.split('?')[0];
-    if (path.endsWith('patient-treatments') || path.includes('/patient-treatments')) {
+    if (path.endsWith('smile-intelligence') || path.includes('/smile-intelligence')) {
+      if (this.showPatientFeatures) {
+        this.currentView = 'smile-intelligence';
+      } else {
+        this.currentView = 'home';
+        this.router.navigate(['/dashboard'], { replaceUrl: true });
+      }
+    } else if (path.endsWith('patient-treatments') || path.includes('/patient-treatments')) {
       if (this.showPatientFeatures) {
         this.currentView = 'patient-treatments';
       } else {

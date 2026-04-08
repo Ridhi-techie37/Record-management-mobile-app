@@ -12,6 +12,7 @@ export const routes: Routes = [
   { path: 'dashboard/patients', component: Dashboard, canActivate: [authGuard] },
   { path: 'dashboard/patient-visits', component: Dashboard, canActivate: [authGuard] },
   { path: 'dashboard/patient-treatments', component: Dashboard, canActivate: [authGuard] },
+  { path: 'dashboard/smile-intelligence', component: Dashboard, canActivate: [authGuard] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

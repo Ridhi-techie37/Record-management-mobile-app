@@ -7,7 +7,7 @@
         <span></span>
       </span>
     </button>
-    <h1 class="header-title">Patient Record</h1>
+    <h1 class="header-title">{{ headerTitle }}</h1>
   </header>
 
   <div class="backdrop" [class.open]="sidebarOpen" (click)="closeSidebar()"></div>
@@ -25,6 +25,7 @@
         <a [routerLink]="['/dashboard', 'patients']" routerLinkActive="active">Patients</a>
         <a [routerLink]="['/dashboard', 'patient-visits']" routerLinkActive="active">Patient Visits</a>
         <a [routerLink]="['/dashboard', 'patient-treatments']" routerLinkActive="active">Patient Treatments</a>
+        <a [routerLink]="['/dashboard', 'smile-intelligence']" routerLinkActive="active">Smile Intelligence</a>
       }
     </nav>
     <button class="btn-logout" (click)="logout()">Logout</button>
@@ -63,6 +64,11 @@
       @case ('patient-treatments') {
         @if (showPatientFeatures) {
           <app-patient-treatments />
+        }
+      }
+      @case ('smile-intelligence') {
+        @if (showPatientFeatures) {
+          <app-smile-intelligence />
         }
       }
     }
