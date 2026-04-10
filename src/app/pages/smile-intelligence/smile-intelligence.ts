@@ -1,100 +1,52 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { SmileScanResult, SmileScanService } from '../../services/smile-intelligence/smile-scan.service';
+import { SmileScanRecord } from '../../services/smile-intelligence/smile-scan.model';
+import { SmileCaptureComponent } from './capture/smile-capture.component';
+import { SmileHistoryComponent } from './history/smile-history.component';
+import { SmileResultDetailComponent } from './result/smile-result-detail.component';
+
+type SmileTab = 'capture' | 'history';
 
 @Component({
   selector: 'app-smile-intelligence',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, SmileCaptureComponent, SmileHistoryComponent, SmileResultDetailComponent],
   templateUrl: './smile-intelligence.html',
   styleUrl: './smile-intelligence.css'
 })
-export class SmileIntelligence implements OnDestroy {
-  patientIdInput = '';
-  selectedImage: File | null = null;
-  previewUrl: string | null = null;
+export class SmileIntelligence {
+  activeTab: SmileTab = 'capture';
+  detailRecord: SmileScanRecord | null = null;
+  showScoreGuide = false;
 
-  loading = false;
-  historyLoading = false;
-  error = '';
-  historyError = '';
-
-  latestResult: SmileScanResult | null = null;
-  history: SmileScanResult[] = [];
-
-  constructor(private readonly smileScanService: SmileScanService) {}
-
-  onImageChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
-    this.selectedImage = file;
-    this.latestResult = null;
-    this.error = '';
-
-    if (!file) {
-      this.previewUrl = null;
-      return;
-    }
-    this.releasePreviewUrl();
-    this.previewUrl = URL.createObjectURL(file);
+  setTab(tab: SmileTab): void {
+    this.activeTab = tab;
   }
 
-  analyze(): void {
-    const patientId = parseInt(this.patientIdInput.trim(), 10);
-    if (!patientId || patientId <= 0) {
-      this.error = 'Please enter a valid Patient ID.';
-      return;
-    }
-    if (!this.selectedImage) {
-      this.error = 'Please select an image.';
-      return;
-    }
-
-    this.loading = true;
-    this.error = '';
-    this.smileScanService.scanSmile(patientId, this.selectedImage).subscribe({
-      next: (result) => {
-        this.latestResult = result;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = typeof err === 'string' ? err : err?.message || 'Analysis failed';
-        this.loading = false;
-      }
-    });
+  onOpenResult(record: SmileScanRecord): void {
+    this.detailRecord = record;
   }
 
-  loadHistory(): void {
-    const patientId = parseInt(this.patientIdInput.trim(), 10);
-    if (!patientId || patientId <= 0) {
-      this.historyError = 'Please enter a valid Patient ID.';
-      return;
-    }
-
-    this.historyLoading = true;
-    this.historyError = '';
-    this.history = [];
-    this.smileScanService.getByPatientId(patientId).subscribe({
-      next: (items) => {
-        this.history = items ?? [];
-        this.historyLoading = false;
-      },
-      error: (err) => {
-        this.historyError = typeof err === 'string' ? err : err?.message || 'Failed to load history';
-        this.historyLoading = false;
-      }
-    });
+  closeDetail(): void {
+    this.detailRecord = null;
+    this.showScoreGuide = false;
   }
 
-  ngOnDestroy(): void {
-    this.releasePreviewUrl();
+  goNewScanFromDetail(): void {
+    this.closeDetail();
+    this.setTab('capture');
   }
 
-  private releasePreviewUrl(): void {
-    if (this.previewUrl) {
-      URL.revokeObjectURL(this.previewUrl);
-      this.previewUrl = null;
-    }
+  onViewHistoryFromResult(): void {
+    this.closeDetail();
+    this.setTab('history');
+  }
+
+  openScoreGuide(): void {
+    this.showScoreGuide = true;
+  }
+
+  closeScoreGuide(): void {
+    this.showScoreGuide = false;
   }
 }

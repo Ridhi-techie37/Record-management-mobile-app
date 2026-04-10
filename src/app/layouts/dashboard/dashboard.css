@@ -140,4 +140,15 @@
   background: #f8fafc;
   overflow: auto;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Smile Intelligence fills content and scrolls inside its own column (like Ionic tabs). */
+.content app-smile-intelligence {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }

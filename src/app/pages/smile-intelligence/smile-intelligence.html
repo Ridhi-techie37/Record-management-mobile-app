@@ -1,105 +1,49 @@
-<div class="smile-intelligence-page">
-  <div class="screen-title">Smile Intelligence</div>
-
-  <div class="content-center">
-    <div class="card patient-card">
-      <div class="card-label-row">
-        <span class="icon-dot">ID</span>
-        <div class="label-wrap">
-          <label class="field-label">Patient ID <span class="required">Required</span></label>
-          <p class="field-help">Enter the patient's ID to link this scan to their record.</p>
-        </div>
-      </div>
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Patient ID"
-        [(ngModel)]="patientIdInput"
-      />
-    </div>
-
-    <div class="card capture-card">
-      <div class="capture-title">Capture or upload</div>
-      <p class="field-help center">Take a photo or choose from your gallery</p>
-      <div class="upload-row">
-        <input class="file-input" type="file" accept="image/*" (change)="onImageChange($event)" />
-      </div>
-      <button type="button" class="btn-primary full-btn" [disabled]="loading" (click)="analyze()">
-        {{ loading ? 'Analyzing...' : 'Analyze Smile' }}
-      </button>
-      <button type="button" class="btn-secondary full-btn" (click)="loadHistory()">Load History</button>
-    </div>
-  </div>
-
-  @if (error) {
-    <p class="error">{{ error }}</p>
-  }
-
-  @if (previewUrl) {
-    <div class="preview-box">
-      <img [src]="previewUrl" alt="Preview" />
-    </div>
-  }
-
-  @if (latestResult) {
-    <div class="result-card card">
-      <h3>Latest Analysis</h3>
-      <p><strong>Smile Score:</strong> {{ latestResult.smileScore }}</p>
-      <p><strong>Alignment:</strong> {{ latestResult.alignmentScore }}</p>
-      <p><strong>Gum Health:</strong> {{ latestResult.gumHealthScore }}</p>
-      <p><strong>Whiteness:</strong> {{ latestResult.whitenessScore }}</p>
-      <p><strong>Symmetry:</strong> {{ latestResult.symmetryScore }}</p>
-      <p><strong>Plaque Risk:</strong> {{ latestResult.plaqueRiskLevel }}</p>
-      <p><strong>Confidence:</strong> {{ latestResult.confidenceScore }}%</p>
-      @if (latestResult.recommendations.length > 0) {
-        <ul>
-          @for (rec of latestResult.recommendations; track rec) {
-            <li>{{ rec }}</li>
-          }
-        </ul>
-      }
-    </div>
-  }
-
-  <div class="history-section">
-    <h3 class="history-title">Patient Scan History</h3>
-    @if (historyLoading) {
-      <p>Loading...</p>
-    } @else if (historyError) {
-      <p class="error">{{ historyError }}</p>
-    } @else if (history.length === 0) {
-      <p class="muted">No scans found.</p>
+<div class="smile-shell">
+  <div class="smile-intelligence-page">
+    @if (activeTab === 'capture') {
+      <app-smile-capture (switchToHistory)="setTab('history')" (scoreGuide)="openScoreGuide()" />
     } @else {
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Created At</th>
-              <th>Smile</th>
-              <th>Alignment</th>
-              <th>Gum</th>
-              <th>White</th>
-              <th>Symmetry</th>
-              <th>Plaque Risk</th>
-              <th>Confidence</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (scan of history; track $index) {
-              <tr>
-                <td>{{ scan.createdAt || '-' }}</td>
-                <td>{{ scan.smileScore }}</td>
-                <td>{{ scan.alignmentScore }}</td>
-                <td>{{ scan.gumHealthScore }}</td>
-                <td>{{ scan.whitenessScore }}</td>
-                <td>{{ scan.symmetryScore }}</td>
-                <td>{{ scan.plaqueRiskLevel }}</td>
-                <td>{{ scan.confidenceScore }}%</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <app-smile-history (openResult)="onOpenResult($event)" (goCapture)="setTab('capture')" />
     }
   </div>
+
+  @if (detailRecord; as r) {
+    <app-smile-result-detail
+      [record]="r"
+      (close)="closeDetail()"
+      (newScan)="goNewScanFromDetail()"
+      (viewHistory)="onViewHistoryFromResult()"
+      (scoreGuide)="openScoreGuide()"
+    />
+  }
+
+  @if (!detailRecord) {
+    <div class="tab-bar">
+      <button type="button" class="tab-btn" [class.active]="activeTab === 'capture'" (click)="setTab('capture')">Capture</button>
+      <button type="button" class="tab-btn" [class.active]="activeTab === 'history'" (click)="setTab('history')">History</button>
+    </div>
+  }
 </div>
+
+@if (showScoreGuide) {
+  <div class="camera-backdrop score-guide-backdrop" (click)="closeScoreGuide()"></div>
+  <div class="score-guide-modal" role="dialog" aria-modal="true" aria-label="Score guide">
+    <div class="score-guide-head">
+      <h3>Score guide</h3>
+      <button type="button" class="score-guide-close" (click)="closeScoreGuide()" aria-label="Close">×</button>
+    </div>
+    <div class="score-guide-body">
+      <h4>What your Smile Score means</h4>
+      <p>Your overall score is a number from <strong>0 to 100</strong>:</p>
+      <ul class="score-guide-list">
+        <li><strong>70+</strong> — Good. Keep up the good habits.</li>
+        <li><strong>40–69</strong> — Moderate. There’s room to improve.</li>
+        <li><strong>Below 40</strong> — Consider a dental check-up for advice.</li>
+      </ul>
+      <h4>How we calculate the Smile Score</h4>
+      <p>We combine Alignment, Gum health, Whiteness, and Symmetry (each 0–100) with weights, then adjust for plaque risk (Low / Medium / High).</p>
+      <h4>Confidence %</h4>
+      <p>Confidence reflects how consistent your area scores are. This score is for guidance only and does not replace a professional dental check-up.</p>
+    </div>
+  </div>
+}

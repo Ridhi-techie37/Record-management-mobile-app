@@ -1,0 +1,149 @@
+@if (loading) {
+  <div class="loading-overlay">
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Analyzing your smile...</p>
+      <p class="loading-sub">AI is evaluating alignment, gum health and more</p>
+      @if (loadingTip) {
+        <div class="loading-tip">{{ loadingTip }}</div>
+      }
+    </div>
+  </div>
+}
+
+<div class="content-wrapper" [class.hidden-while-loading]="loading">
+  <div class="card patient-card">
+    <div class="patient-header">
+      <span class="card-icon" aria-hidden="true">&#128100;</span>
+      <div class="patient-label-wrap">
+        <h2>Patient ID <span class="required-asterisk">*</span></h2>
+        <span class="required-badge">Required</span>
+      </div>
+    </div>
+    <p class="patient-hint">Enter the patient's ID to link this scan to their record.</p>
+    <input type="number" class="patient-input" min="1" placeholder="Enter ID (e.g. 1)" [(ngModel)]="patientIdInput" />
+  </div>
+
+  @if (previewUrl) {
+    <div class="card preview-card">
+      <div class="preview-frame">
+        <img [src]="previewUrl" alt="Smile preview" class="preview-image" />
+      </div>
+      <div class="preview-actions">
+        <button type="button" class="btn-primary full-btn" [disabled]="loading" (click)="analyze()">
+          {{ loading ? 'Analyzing...' : 'Analyze Smile' }}
+        </button>
+        <button type="button" class="btn-outline full-btn" (click)="clearPreviewOnly()">Choose Another</button>
+      </div>
+    </div>
+  } @else {
+    <div class="card capture-card">
+      <div class="capture-header">
+        <div class="capture-icon-wrap" aria-hidden="true">&#128248;</div>
+        <h2>Capture or upload</h2>
+        <p>Take a photo or choose from your gallery</p>
+      </div>
+      <input #galleryInput class="file-input hidden" type="file" accept="image/*" (change)="onImageChange($event)" />
+      <button type="button" class="btn-primary full-btn" (click)="openCamera()">Take Photo</button>
+      <button type="button" class="btn-outline full-btn" (click)="triggerFileInput(galleryInput)">Choose From Gallery</button>
+    </div>
+  }
+
+  @if (error) {
+    <div class="card error-card">{{ error }}</div>
+  }
+
+  @if (latestResult; as lr) {
+    <div class="capture-results-stack">
+      <div class="card score-hero" [ngClass]="'score-hero--' + getScoreColor(lr.smileScore)">
+        <div class="score-hero-badge">
+          <span class="score-hero-num">{{ lr.smileScore }}</span>
+          <span class="score-hero-max">/ 100</span>
+        </div>
+        <h2 class="score-hero-label">Smile Score</h2>
+        <div class="result-meta-row">
+          <span class="meta-pill">{{ getConfidencePercent(lr) }}% confidence</span>
+          @if (getPatientId() > 0) {
+            <span class="meta-pill">ID {{ getPatientId() }}</span>
+          }
+          @if (getScanDateDisplay(lr)) {
+            <span class="meta-pill">{{ getScanDateDisplay(lr) }}</span>
+          }
+        </div>
+        @if (getScoreMessage(lr.smileScore).text) {
+          <p class="score-hero-message">
+            <span class="score-hero-emoji">{{ getScoreMessage(lr.smileScore).emoji }}</span>
+            {{ getScoreMessage(lr.smileScore).text }}
+          </p>
+        }
+        <div class="progress-track hero-progress">
+          <div class="progress-fill progress-fill--hero" [style.width.%]="lr.smileScore"></div>
+        </div>
+      </div>
+
+      <div class="card breakdown-card">
+        <h3 class="breakdown-title breakdown-title--with-icon">Score breakdown</h3>
+        <div class="breakdown-list">
+          @for (item of scoreBreakdownLabels; track item.key) {
+            @let sub = getScoreValue(lr, item.key);
+            <div class="breakdown-row">
+              <div class="breakdown-label-row">
+                <span class="breakdown-name">{{ item.label }}</span>
+                <span class="breakdown-val">{{ sub }}/100</span>
+              </div>
+              <div class="progress-track breakdown-progress">
+                <div
+                  class="progress-fill"
+                  [ngClass]="'progress-fill--' + getScoreColor(sub)"
+                  [style.width.%]="sub"
+                ></div>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="plaque-row">
+          <span>Plaque risk</span>
+          <span [class]="plaqueBadgeClass(lr.plaqueRiskLevel)">{{ lr.plaqueRiskLevel || '-' }}</span>
+        </div>
+        <button type="button" class="btn-score-guide" (click)="scoreGuide.emit()">Score guide</button>
+      </div>
+
+      @if (lr.recommendations.length) {
+        <div class="card recommendations-detail-card">
+          <h3 class="breakdown-title breakdown-title--with-icon breakdown-title--rec">Recommendations</h3>
+          <ul class="recommendations-detail-list">
+            @for (rec of lr.recommendations; track rec) {
+              <li>{{ rec }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (lr.imageUrl) {
+        <div class="card scan-image-detail-card">
+          <img [src]="lr.imageUrl" alt="Smile scan" class="scan-image-detail" />
+        </div>
+      }
+
+      <div class="capture-result-actions">
+        <button type="button" class="btn-primary full-btn" (click)="clearCaptureResult()">New scan</button>
+        <button type="button" class="btn-outline full-btn" (click)="switchToHistory.emit()">View history</button>
+      </div>
+    </div>
+  }
+</div>
+
+@if (showCameraModal) {
+  <div class="camera-backdrop" (click)="closeCamera()"></div>
+  <div class="camera-modal" role="dialog" aria-modal="true" aria-label="Take Photo">
+    <h3>Take Photo</h3>
+    <video id="smile-camera-video" #cameraVideo class="camera-video" autoplay playsinline muted></video>
+    <div class="camera-actions">
+      <button type="button" class="btn-primary" (click)="capturePhoto(cameraVideo)">Capture</button>
+      <button type="button" class="btn-secondary" (click)="closeCamera()">Cancel</button>
+    </div>
+    @if (cameraError) {
+      <p class="error">{{ cameraError }}</p>
+    }
+  </div>
+}

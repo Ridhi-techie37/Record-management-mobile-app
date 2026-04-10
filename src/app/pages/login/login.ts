@@ -19,11 +19,7 @@ export class Login {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {
-    if (authService.isLoggedIn()) {
-      router.navigate(['/dashboard']);
-    }
-  }
+  ) {}
 
   onLogin() {
     this.error = '';
