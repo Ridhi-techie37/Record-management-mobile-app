@@ -17,9 +17,6 @@
     <nav class="nav">
       @if (!isPatientUser) {
         <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-        <a [routerLink]="['/dashboard', 'employees']" routerLinkActive="active">Employees</a>
-        <a [routerLink]="['/dashboard', 'departments']" routerLinkActive="active">Departments</a>
-        <a [routerLink]="['/dashboard', 'attendance']" routerLinkActive="active">Attendance</a>
         <a [routerLink]="['/dashboard', 'patients']" routerLinkActive="active">Patients</a>
         <a [routerLink]="['/dashboard', 'patient-visits']" routerLinkActive="active">Patient Visits</a>
         <a [routerLink]="['/dashboard', 'patient-treatments']" routerLinkActive="active">Patient Treatments</a>
