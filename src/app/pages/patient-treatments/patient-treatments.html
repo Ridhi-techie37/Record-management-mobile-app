@@ -1,21 +1,25 @@
 <div class="patient-treatments-page">
   <h2>Patient Treatments</h2>
 
-  @if (!hasSearched) {
+  @if (!hasSearched && !isPatientUser) {
     <p class="search-prompt">Search treatments by Patient ID</p>
   }
 
-  <div class="search-row">
-    <input
-      type="text"
-      class="search-input"
-      placeholder="Patient ID"
-      [(ngModel)]="patientIdInput"
-      (keyup.enter)="onSearch()"
-    />
-    <button type="button" class="btn-search" (click)="onSearch()">Search</button>
-    <button type="button" class="btn-clear" (click)="onClear()">Clear</button>
-  </div>
+  @if (!isPatientUser) {
+    <div class="search-row">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Patient ID"
+        [(ngModel)]="patientIdInput"
+        (keyup.enter)="onSearch()"
+      />
+      <button type="button" class="btn-search" (click)="onSearch()">Search</button>
+      <button type="button" class="btn-clear" (click)="onClear()">Clear</button>
+    </div>
+  } @else {
+    <p class="search-prompt">Showing your treatment details for Patient ID {{ patientIdInput }}</p>
+  }
 
   @if (loading) {
     <p>Loading...</p>

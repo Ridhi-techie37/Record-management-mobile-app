@@ -1,7 +1,16 @@
-import { Component, EventEmitter, OnDestroy, Output, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  ChangeDetectorRef,
+  ViewEncapsulation
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { AuthService } from '../../../services/auth.service';
 import { SmileScanService } from '../../../services/smile-intelligence/smile-scan.service';
 import { SmileScanResult } from '../../../services/smile-intelligence/smile-scan.model';
 import { ScanHistoryService } from '../../../services/smile-intelligence/scan-history.service';
@@ -32,7 +41,7 @@ const LOADING_TIPS = [
   styleUrl: '../smile-intelligence.css',
   encapsulation: ViewEncapsulation.None
 })
-export class SmileCaptureComponent implements OnDestroy {
+export class SmileCaptureComponent implements OnInit, OnDestroy {
   @Output() readonly switchToHistory = new EventEmitter<void>();
   @Output() readonly scoreGuide = new EventEmitter<void>();
 
@@ -58,10 +67,18 @@ export class SmileCaptureComponent implements OnDestroy {
   readonly plaqueBadgeClass = plaqueBadgeClass;
 
   constructor(
+    private readonly auth: AuthService,
     private readonly smileScanService: SmileScanService,
     private readonly scanHistory: ScanHistoryService,
     private readonly cdr: ChangeDetectorRef
   ) {}
+
+  ngOnInit(): void {
+    const fromLogin = this.auth.getLoggedInPatientId();
+    if (fromLogin != null && fromLogin > 0 && !String(this.patientIdInput ?? '').trim()) {
+      this.patientIdInput = fromLogin;
+    }
+  }
 
   get canAnalyze(): boolean {
     const patientId = this.getPatientId();

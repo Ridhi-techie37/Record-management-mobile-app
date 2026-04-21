@@ -4,7 +4,6 @@ import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import { FEATURE_FLAGS } from '../../config/feature-flags.config';
 import { Home } from '../../pages/home/home';
 import { Employees } from '../../pages/employees/employees';
 import { Departments } from '../../pages/departments/departments';
@@ -26,7 +25,7 @@ type DashboardView = 'home' | 'employees' | 'departments' | 'attendance' | 'pati
 export class Dashboard implements OnDestroy {
   sidebarOpen = false;
   currentView: DashboardView = 'home';
-  readonly showPatientFeatures = FEATURE_FLAGS.showPatientFeatures;
+  readonly isPatientUser: boolean;
   private routerSub: Subscription | null = null;
 
   constructor(
@@ -34,6 +33,7 @@ export class Dashboard implements OnDestroy {
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {
+    this.isPatientUser = this.auth.isPatientUser();
     this.updateViewFromUrl(this.router.url);
     this.routerSub = this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd)
@@ -71,55 +71,32 @@ export class Dashboard implements OnDestroy {
 
   private updateViewFromUrl(url: string): void {
     const path = url.split('?')[0];
-    if (path.endsWith('smile-intelligence') || path.includes('/smile-intelligence')) {
-      if (this.showPatientFeatures) {
+    if (this.isPatientUser) {
+      if (path.endsWith('patient-treatments') || path.includes('/patient-treatments')) {
+        this.currentView = 'patient-treatments';
+      } else if (path.endsWith('smile-intelligence') || path.includes('/smile-intelligence')) {
         this.currentView = 'smile-intelligence';
       } else {
-        this.currentView = 'home';
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
-      }
-    } else if (path.endsWith('patient-treatments') || path.includes('/patient-treatments')) {
-      if (this.showPatientFeatures) {
         this.currentView = 'patient-treatments';
-      } else {
-        this.currentView = 'home';
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
+        this.router.navigate(['/dashboard/patient-treatments'], { replaceUrl: true });
       }
+      return;
+    }
+
+    if (path.endsWith('smile-intelligence') || path.includes('/smile-intelligence')) {
+      this.currentView = 'smile-intelligence';
+    } else if (path.endsWith('patient-treatments') || path.includes('/patient-treatments')) {
+      this.currentView = 'patient-treatments';
     } else if (path.endsWith('patient-visits') || path.includes('/patient-visits')) {
-      if (this.showPatientFeatures) {
-        this.currentView = 'patient-visits';
-      } else {
-        this.currentView = 'home';
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
-      }
+      this.currentView = 'patient-visits';
     } else if (path.endsWith('patients') || path.includes('/patients')) {
-      if (this.showPatientFeatures) {
-        this.currentView = 'patients';
-      } else {
-        this.currentView = 'home';
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
-      }
+      this.currentView = 'patients';
     } else if (path.endsWith('attendance') || path.includes('/attendance')) {
-      if (this.showPatientFeatures) {
-        this.currentView = 'home';
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
-      } else {
-        this.currentView = 'attendance';
-      }
+      this.currentView = 'attendance';
     } else if (path.endsWith('employees') || path.includes('/employees')) {
-      if (this.showPatientFeatures) {
-        this.currentView = 'home';
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
-      } else {
-        this.currentView = 'employees';
-      }
+      this.currentView = 'employees';
     } else if (path.endsWith('departments') || path.includes('/departments')) {
-      if (this.showPatientFeatures) {
-        this.currentView = 'home';
-        this.router.navigate(['/dashboard'], { replaceUrl: true });
-      } else {
-        this.currentView = 'departments';
-      }
+      this.currentView = 'departments';
     } else {
       this.currentView = 'home';
     }

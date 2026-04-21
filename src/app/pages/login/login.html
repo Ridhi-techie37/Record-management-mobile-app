@@ -1,8 +1,95 @@
-<h2>Login</h2>
+<div class="login-page">
+  <div class="login-bg-pattern" aria-hidden="true"></div>
 
-<input [(ngModel)]="username" placeholder="Username">
-<input [(ngModel)]="password" type="password" placeholder="Password">
+  <div class="login-card">
+    <header class="login-header">
+      <div class="brand">
+        <span class="brand-name">Jyotika Dental Clinic</span>
+      </div>
+      <button type="button" class="btn-help">
+        <span class="btn-help-icon" aria-hidden="true">?</span>
+        Help
+      </button>
+    </header>
 
-<button (click)="onLogin()">Login</button>
+    <div class="login-grid">
+      <section class="login-visual" aria-labelledby="login-visual-heading">
+        <h1 id="login-visual-heading" class="login-visual-title">Login</h1>
+        <div class="login-visual-frame">
+          <div class="login-blob" aria-hidden="true">
+            <svg class="login-blob-deco" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M30 20h8v8h-8zM70 55l6-6 6 6-6 6-6-6zM45 70c0-4 3-7 7-7s7 3 7 7-3 7-7 7-7-3-7-7z" stroke="#fff" stroke-opacity=".35" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <img
+            class="login-hero-img"
+            src="/images/login-hero.png"
+            alt="Dental care professional"
+            width="320"
+            height="360"
+          />
+        </div>
+      </section>
 
-<p *ngIf="error" style="color:red">{{ error }}</p>
+      <section class="login-panel" aria-labelledby="login-form-heading">
+        <h2 id="login-form-heading" class="login-form-title">Login</h2>
+
+        <form class="login-form" (ngSubmit)="onLogin()">
+          <label class="field">
+            <span class="field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 12a4 4 0 100-8 4 4 0 000 8z"/>
+                <path d="M4 20a8 8 0 0116 0" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <input
+              [(ngModel)]="username"
+              name="username"
+              type="text"
+              placeholder="Patient ID or username"
+              autocomplete="username"
+            />
+          </label>
+
+          <label class="field">
+            <span class="field-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="5" y="11" width="14" height="10" rx="2"/>
+                <path d="M8 11V7a4 4 0 018 0v4" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <input
+              [(ngModel)]="password"
+              name="password"
+              type="password"
+              placeholder="Mobile number or password"
+              autocomplete="current-password"
+            />
+          </label>
+
+          <button type="submit" class="btn-login">Login</button>
+        </form>
+
+        <a class="forgot-link" href="#">Forgot password?</a>
+
+        <p *ngIf="error" class="login-error" role="alert">{{ error }}</p>
+      </section>
+
+      <p class="login-side-footer-note">
+        <strong>Patients:</strong> use your <strong>Patient ID</strong> and registered mobile number. <strong>Staff:</strong> use your username and password.
+</p>
+    </div>
+
+    <p class="login-footer-note">
+      <strong>Note:</strong> If you do not know your Patient ID, please contact us at
+      <strong><a href="tel:9878201293">9878201293</a></strong>.
+    </p>
+
+    <div class="login-card-deco" aria-hidden="true">
+      <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="58" cy="58" r="22" stroke="#C8DCF0" stroke-width="1.2"/>
+        <path d="M20 48c8-12 22-18 36-14" stroke="#C8DCF0" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+</div>

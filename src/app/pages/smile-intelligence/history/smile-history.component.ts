@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Output, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { AuthService } from '../../../services/auth.service';
 import { SmileScanService } from '../../../services/smile-intelligence/smile-scan.service';
 import { SmileScanRecord, SmileScanResult } from '../../../services/smile-intelligence/smile-scan.model';
 import { ScanHistoryService } from '../../../services/smile-intelligence/scan-history.service';
@@ -21,7 +22,7 @@ import {
   styleUrl: '../smile-intelligence.css',
   encapsulation: ViewEncapsulation.None
 })
-export class SmileHistoryComponent {
+export class SmileHistoryComponent implements OnInit {
   @Output() readonly openResult = new EventEmitter<SmileScanRecord>();
   @Output() readonly goCapture = new EventEmitter<void>();
 
@@ -39,10 +40,18 @@ export class SmileHistoryComponent {
   readonly trackRemote = remoteScanTrackId;
 
   constructor(
+    private readonly auth: AuthService,
     private readonly smileScanService: SmileScanService,
     private readonly scanHistory: ScanHistoryService,
     private readonly cdr: ChangeDetectorRef
   ) {}
+
+  ngOnInit(): void {
+    const fromLogin = this.auth.getLoggedInPatientId();
+    if (fromLogin != null && fromLogin > 0 && this.externalPatientId == null) {
+      this.externalPatientId = fromLogin;
+    }
+  }
 
   get localRecords(): SmileScanRecord[] {
     return this.scanHistory.getAll();

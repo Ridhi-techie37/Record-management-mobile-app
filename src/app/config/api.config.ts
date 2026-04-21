@@ -17,6 +17,7 @@ export const API_CONFIG = {
   },
   endpoints: {
     login: '/api/Auth/login',
+    patientLogin: '/api/Auth/patient-login',
     employees: '/api/Employee',
     departments: '/api/Department',
     attendance: '/api/EmployeeAttendance',
