@@ -1,0 +1,100 @@
+<div class="history-wrapper">
+  <div class="card patient-lookup-card">
+    <div class="patient-lookup-header">
+      <span class="card-icon" aria-hidden="true">&#128269;</span>
+      <div>
+        <h2>Find patient scans</h2>
+        <p>Look up smile analysis by patient ID</p>
+      </div>
+    </div>
+    <input
+      type="number"
+      class="patient-input"
+      min="1"
+      [ngModel]="externalPatientId"
+      (input)="onPatientIdInput($event)"
+      placeholder="Enter ID (e.g. 1)"
+    />
+    <button type="button" class="btn-primary full-btn" [disabled]="historyLoading" (click)="loadHistory()">
+      {{ historyLoading ? 'Loading...' : 'Find scans' }}
+    </button>
+    @if (historyError) {
+      <p class="error">{{ historyError }}</p>
+    }
+  </div>
+
+  @if (remoteScans.length > 0) {
+    <div class="remote-list-header">
+      <div class="remote-list-title">
+        Scans for Patient ID {{ fetchedForPatientId }} ({{ remoteScans.length }} scan{{ remoteScans.length === 1 ? '' : 's' }})
+      </div>
+      <button type="button" class="btn-outline btn-sort" (click)="toggleRemoteSort()">
+        {{ remoteSortNewestFirst ? 'Newest first' : 'Oldest first' }}
+      </button>
+    </div>
+    <div class="history-list">
+      @for (scan of sortedRemoteScans; track trackRemote(scan, $index)) {
+        <div class="history-item card" (click)="openRemoteScan(scan)">
+          <div class="history-item-main">
+            @if (scan.imageUrl) {
+              <div class="history-thumb-wrap">
+                <img [src]="scan.imageUrl" alt="Smile scan" class="history-thumb" />
+              </div>
+            }
+            <div class="score-box" [class]="'score-box score-box--' + getScoreColor(scan.smileScore)">
+              <span class="score-num">{{ scan.smileScore }}</span><span class="score-den">/100</span>
+            </div>
+            <div class="history-item-info">
+              <h3>Smile scan</h3>
+              <p class="history-date">Loaded from server</p>
+              @if (scan.createdAt && formatCreatedAt(scan.createdAt)) {
+                <p class="history-date">{{ formatCreatedAt(scan.createdAt) }}</p>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+    <div class="section-divider"><span>Recently scanned</span></div>
+  } @else if (hasSearchedHistory && !historyLoading && !historyError) {
+    <div class="card empty-card">
+      <div class="empty-illustration" aria-hidden="true">&#128269;</div>
+      <h2>No scans found</h2>
+      <p>No server scans were found for Patient ID {{ fetchedForPatientId ?? externalPatientId }}.</p>
+    </div>
+  }
+
+  @if (localRecords.length > 0) {
+    <div class="history-list">
+      @for (scan of localRecords; track scan.id) {
+        <div class="history-item card" (click)="openHistoryRecord(scan)">
+          <div class="history-item-main">
+            @if (scan.imageDataUrl || scan.imageUrl) {
+              <div class="history-thumb-wrap">
+                <img [src]="scan.imageDataUrl || scan.imageUrl || ''" alt="Smile scan" class="history-thumb" />
+              </div>
+            }
+            <div class="score-box" [class]="'score-box score-box--' + getScoreColor(scan.smileScore)">
+              <span class="score-num">{{ scan.smileScore }}</span><span class="score-den">/100</span>
+            </div>
+            <div class="history-item-info">
+              <h3>Smile scan</h3>
+              <p class="history-date">{{ formatDateShort(scan.scannedAt) }}</p>
+              @if (scan.externalPatientId != null) {
+                <p class="history-patient">Patient ID {{ scan.externalPatientId }}</p>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+    <button type="button" class="btn-outline full-btn btn-clear" (click)="clearHistory()">Clear history</button>
+  } @else if (!historyLoading && !historyError && (!hasSearchedHistory || remoteScans.length === 0)) {
+    <div class="card empty-card">
+      <div class="empty-illustration" aria-hidden="true">&#128197;</div>
+      <h2>No scans yet</h2>
+      <p>Capture your first smile to see AI analysis and track your history here.</p>
+      <button type="button" class="btn-primary full-btn btn-capture" (click)="goCapture.emit()">Capture smile</button>
+    </div>
+  }
+</div>

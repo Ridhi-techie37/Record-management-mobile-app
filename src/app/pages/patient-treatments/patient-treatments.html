@@ -1,0 +1,72 @@
+<div class="patient-treatments-page">
+  <h2>Patient Treatments</h2>
+
+  @if (!hasSearched && !isPatientUser) {
+    <p class="search-prompt">Search treatments by Patient ID</p>
+  }
+
+  @if (!isPatientUser) {
+    <div class="search-row">
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Patient ID"
+        [(ngModel)]="patientIdInput"
+        (keyup.enter)="onSearch()"
+      />
+      <button type="button" class="btn-search" (click)="onSearch()">Search</button>
+      <button type="button" class="btn-clear" (click)="onClear()">Clear</button>
+    </div>
+  } @else {
+    <p class="search-prompt">Showing your treatment details for Patient ID {{ patientIdInput }}</p>
+  }
+
+  @if (loading) {
+    <p>Loading...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else if (hasSearched && items.length === 0) {
+    <p class="empty">There is no patient associated with this id or no treatments found.</p>
+  } @else if (items.length > 0) {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Patient ID</th>
+            <th>Treatment ID</th>
+            <th>Treatment Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Total Amount</th>
+            <th>Amount Paid</th>
+            <th>Balance Due</th>
+            <th>Label</th>
+            <th>Closed</th>
+            <th>Treatment has Image</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.id || $index) {
+            <tr>
+              <td>{{ item.id }}</td>
+              <td>{{ item.patientId ?? '-' }}</td>
+              <td>{{ item.treatmentId ?? '-' }}</td>
+              <td>{{ item.treatmentName || '-' }}</td>
+              <td>{{ formatDate(item.startDate) }}</td>
+              <td>{{ formatDate(item.endDate) }}</td>
+              <td>{{ item.totalAmountOfTreatment ?? 0 }}</td>
+              <td>{{ item.amountPaidByPatient ?? 0 }}</td>
+              <td>{{ item.balanceDue ?? 0 }}</td>
+              <td>{{ item.label || '-' }}</td>
+              <td>{{ item.closeTreatment ? 'Yes' : 'No' }}</td>
+              <td>{{ item.treatmentHasImage ? 'Yes' : 'No' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <p class="placeholder">Please enter the patient id to check treatment history.</p>
+  }
+</div>

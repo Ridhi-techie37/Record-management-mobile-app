@@ -2,6 +2,7 @@ import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PatientVisitService, PatientVisit, PatientTreatment } from '../../services/patient-visit.service';
+import { AuthService } from '../../services/auth.service';
 
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -27,6 +28,8 @@ export class PatientVisits implements OnInit {
   filterPatientId: number | null = null;
   /** Raw value for optional Patient ID input */
   patientIdInput = '';
+  readonly isPatientUser: boolean;
+  readonly loggedInPatientId: number | null;
   /** visitId -> list of treatments for that visit (from GET all treatments, filtered by visit) */
   treatmentsByVisitId = new Map<number, PatientTreatment[]>();
   showTreatmentModal = false;
@@ -46,15 +49,34 @@ export class PatientVisits implements OnInit {
 
   constructor(
     private patientVisitService: PatientVisitService,
+    private auth: AuthService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.isPatientUser = this.auth.isPatientUser();
+    this.loggedInPatientId = this.auth.getLoggedInPatientId();
+  }
 
   ngOnInit() {
+    if (this.isPatientUser && this.loggedInPatientId && this.loggedInPatientId > 0) {
+      this.patientIdInput = String(this.loggedInPatientId);
+      this.filterPatientId = this.loggedInPatientId;
+      this.hasSearched = true;
+      this.loadPage(1);
+      return;
+    }
     this.loading = false;
   }
 
   /** User clicked Search: show grid and load visits (optional filter by Patient ID). */
   onSearch() {
+    if (this.isPatientUser && this.loggedInPatientId && this.loggedInPatientId > 0) {
+      this.patientIdInput = String(this.loggedInPatientId);
+      this.filterPatientId = this.loggedInPatientId;
+      this.hasSearched = true;
+      this.loadPage(1);
+      return;
+    }
+
     const id = this.patientIdInput.trim();
     this.filterPatientId = id ? parseInt(id, 10) : null;
     if (id && (isNaN(this.filterPatientId!) || this.filterPatientId! < 1)) {

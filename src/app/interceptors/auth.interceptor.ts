@@ -17,7 +17,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
-      if (err.status === 401 && isPlatformBrowser(platformId)) {
+      const url = req.url || '';
+      const isLoginCall = url.includes('/api/Auth/login');
+      const isSmileCall = url.includes('/api/v1/smile-scans');
+
+      // For Smile APIs, do not hard-redirect to login on 401.
+      // Let the page show a local error so user can retry.
+      if (err.status === 401 && isPlatformBrowser(platformId) && !isLoginCall && !isSmileCall) {
         localStorage.removeItem('token');
         router.navigate(['/login']);
       }

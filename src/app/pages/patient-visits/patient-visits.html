@@ -2,28 +2,34 @@
   <h2>Patient Visits</h2>
 
   @if (!hasSearched) {
-    <p class="search-prompt">Search the patient</p>
-    <div class="search-row">
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Patient ID (optional)"
-        [(ngModel)]="patientIdInput"
-        (keyup.enter)="onSearch()"
-      />
-      <button type="button" class="btn-search" (click)="onSearch()">Search</button>
-    </div>
+    @if (!isPatientUser) {
+      <p class="search-prompt">Search the patient</p>
+      <div class="search-row">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Patient ID (optional)"
+          [(ngModel)]="patientIdInput"
+          (keyup.enter)="onSearch()"
+        />
+        <button type="button" class="btn-search" (click)="onSearch()">Search</button>
+      </div>
+    } @else {
+      <p class="search-prompt">Loading your visits...</p>
+    }
   } @else {
-    <div class="search-row">
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Patient ID (optional)"
-        [(ngModel)]="patientIdInput"
-        (keyup.enter)="onSearch()"
-      />
-      <button type="button" class="btn-search" (click)="onSearch()">Search</button>
-    </div>
+    @if (!isPatientUser) {
+      <div class="search-row">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Patient ID (optional)"
+          [(ngModel)]="patientIdInput"
+          (keyup.enter)="onSearch()"
+        />
+        <button type="button" class="btn-search" (click)="onSearch()">Search</button>
+      </div>
+    }
 
     @if (loading) {
       <p>Loading...</p>

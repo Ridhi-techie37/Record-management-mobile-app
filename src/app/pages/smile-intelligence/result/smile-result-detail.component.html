@@ -1,0 +1,82 @@
+<div class="result-full" role="dialog" aria-modal="true" aria-label="Scan result">
+  <header class="result-full-header">
+    <button type="button" class="result-back-btn" (click)="close.emit()">← Back</button>
+    <span class="result-full-title">Result</span>
+  </header>
+  <div class="result-full-scroll">
+    <div class="card score-hero" [ngClass]="'score-hero--' + getScoreColor(record.smileScore)">
+      <div class="score-hero-badge">
+        <span class="score-hero-num">{{ record.smileScore }}</span>
+        <span class="score-hero-max">/ 100</span>
+      </div>
+      <h1 class="score-hero-label">Smile Score</h1>
+      <div class="result-meta-row">
+        <span class="meta-pill">{{ getConfidencePercent(record) }}% confidence</span>
+        @if (record.externalPatientId != null) {
+          <span class="meta-pill">ID {{ record.externalPatientId }}</span>
+        }
+        @if (getScanDateDisplay(record)) {
+          <span class="meta-pill">{{ getScanDateDisplay(record) }}</span>
+        }
+      </div>
+      @if (getScoreMessage(record.smileScore).text) {
+        <p class="score-hero-message">
+          <span class="score-hero-emoji">{{ getScoreMessage(record.smileScore).emoji }}</span>
+          {{ getScoreMessage(record.smileScore).text }}
+        </p>
+      }
+      <div class="progress-track hero-progress">
+        <div class="progress-fill progress-fill--hero" [style.width.%]="record.smileScore"></div>
+      </div>
+    </div>
+
+    <div class="card breakdown-card">
+      <h2 class="breakdown-title breakdown-title--with-icon">Score breakdown</h2>
+      <div class="breakdown-list">
+        @for (item of scoreBreakdownLabels; track item.key) {
+          @let sub = getScoreValue(record, item.key);
+          <div class="breakdown-row">
+            <div class="breakdown-label-row">
+              <span class="breakdown-name">{{ item.label }}</span>
+              <span class="breakdown-val">{{ sub }}/100</span>
+            </div>
+            <div class="progress-track breakdown-progress">
+              <div
+                class="progress-fill"
+                [ngClass]="'progress-fill--' + getScoreColor(sub)"
+                [style.width.%]="sub"
+              ></div>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="plaque-row">
+        <span>Plaque risk</span>
+        <span [class]="plaqueBadgeClass(record.plaqueRiskLevel)">{{ record.plaqueRiskLevel || '-' }}</span>
+      </div>
+      <button type="button" class="btn-score-guide" (click)="scoreGuide.emit()">Score guide</button>
+    </div>
+
+    @if (record.recommendations.length) {
+      <div class="card recommendations-detail-card">
+        <h2 class="breakdown-title breakdown-title--with-icon breakdown-title--rec">Recommendations</h2>
+        <ul class="recommendations-detail-list">
+          @for (rec of record.recommendations; track rec) {
+            <li>{{ rec }}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (record.imageUrl || record.imageDataUrl) {
+      <div class="card scan-image-detail-card">
+        <img [src]="record.imageUrl || record.imageDataUrl || ''" alt="Smile scan" class="scan-image-detail" />
+      </div>
+    }
+
+    <div class="result-detail-actions">
+      <button type="button" class="btn-primary full-btn" (click)="newScan.emit()">New scan</button>
+      <button type="button" class="btn-outline full-btn" (click)="viewHistory.emit()">View history</button>
+    </div>
+  </div>
+</div>

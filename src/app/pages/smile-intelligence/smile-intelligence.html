@@ -1,0 +1,49 @@
+<div class="smile-shell">
+  <div class="smile-intelligence-page">
+    @if (activeTab === 'capture') {
+      <app-smile-capture (switchToHistory)="setTab('history')" (scoreGuide)="openScoreGuide()" />
+    } @else {
+      <app-smile-history (openResult)="onOpenResult($event)" (goCapture)="setTab('capture')" />
+    }
+  </div>
+
+  @if (detailRecord; as r) {
+    <app-smile-result-detail
+      [record]="r"
+      (close)="closeDetail()"
+      (newScan)="goNewScanFromDetail()"
+      (viewHistory)="onViewHistoryFromResult()"
+      (scoreGuide)="openScoreGuide()"
+    />
+  }
+
+  @if (!detailRecord) {
+    <div class="tab-bar">
+      <button type="button" class="tab-btn" [class.active]="activeTab === 'capture'" (click)="setTab('capture')">Capture</button>
+      <button type="button" class="tab-btn" [class.active]="activeTab === 'history'" (click)="setTab('history')">History</button>
+    </div>
+  }
+</div>
+
+@if (showScoreGuide) {
+  <div class="camera-backdrop score-guide-backdrop" (click)="closeScoreGuide()"></div>
+  <div class="score-guide-modal" role="dialog" aria-modal="true" aria-label="Score guide">
+    <div class="score-guide-head">
+      <h3>Score guide</h3>
+      <button type="button" class="score-guide-close" (click)="closeScoreGuide()" aria-label="Close">×</button>
+    </div>
+    <div class="score-guide-body">
+      <h4>What your Smile Score means</h4>
+      <p>Your overall score is a number from <strong>0 to 100</strong>:</p>
+      <ul class="score-guide-list">
+        <li><strong>70+</strong> — Good. Keep up the good habits.</li>
+        <li><strong>40–69</strong> — Moderate. There’s room to improve.</li>
+        <li><strong>Below 40</strong> — Consider a dental check-up for advice.</li>
+      </ul>
+      <h4>How we calculate the Smile Score</h4>
+      <p>We combine Alignment, Gum health, Whiteness, and Symmetry (each 0–100) with weights, then adjust for plaque risk (Low / Medium / High).</p>
+      <h4>Confidence %</h4>
+      <p>Confidence reflects how consistent your area scores are. This score is for guidance only and does not replace a professional dental check-up.</p>
+    </div>
+  </div>
+}

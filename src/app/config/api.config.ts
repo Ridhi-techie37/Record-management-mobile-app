@@ -1,14 +1,9 @@
 /**
  * API base URL:
- * - Browser (ng serve with proxy): '' = same origin, proxy forwards /api to backend
- * - Capacitor/Android emulator: 'http://10.0.2.2:51100' = direct to backend
- * Avoids mixed-content block (HTTPS page -> HTTP API) when using proxy.
+ * - Browser and mobile builds: use live backend directly.
  */
 function getBaseUrl(): string {
-  if (typeof window !== 'undefined' && (window as any).Capacitor) {
-    return 'http://143.110.253.77:51100';
-  }
-  return '';
+  return 'https://hammerhead-app-ogh8y.ondigitalocean.app';
 }
 
 export const API_CONFIG = {
@@ -17,6 +12,7 @@ export const API_CONFIG = {
   },
   endpoints: {
     login: '/api/Auth/login',
+    patientLogin: '/api/Auth/patient-login',
     employees: '/api/Employee',
     departments: '/api/Department',
     attendance: '/api/EmployeeAttendance',
@@ -24,6 +20,8 @@ export const API_CONFIG = {
     patientsPaged: '/api/Patient/paged',
     patientVisits: '/api/PatientVisit',
     patientVisitsPaged: '/api/PatientVisit/paged',
-    patientTreatments: '/api/PatientTreatment'
+    patientTreatments: '/api/PatientTreatment',
+    patientTreatmentMasterByPatient: '/api/PatientTreatmentMaster/by-patient',
+    smileScans: '/api/v1/smile-scans'
   }
 };

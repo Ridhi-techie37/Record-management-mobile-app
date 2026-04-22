@@ -7,7 +7,7 @@
         <span></span>
       </span>
     </button>
-    <h1 class="header-title">Patient Record</h1>
+    <h1 class="header-title">{{ headerTitle }}</h1>
   </header>
 
   <div class="backdrop" [class.open]="sidebarOpen" (click)="closeSidebar()"></div>
@@ -15,15 +15,15 @@
   <aside class="sidebar" [class.open]="sidebarOpen">
     <h2 class="sidebar-title">Patient Record</h2>
     <nav class="nav">
-      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-      @if (!showPatientFeatures) {
-        <a [routerLink]="['/dashboard', 'employees']" routerLinkActive="active">Employees</a>
-        <a [routerLink]="['/dashboard', 'departments']" routerLinkActive="active">Departments</a>
-        <a [routerLink]="['/dashboard', 'attendance']" routerLinkActive="active">Attendance</a>
-      }
-      @if (showPatientFeatures) {
+      @if (!isPatientUser) {
+        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
         <a [routerLink]="['/dashboard', 'patients']" routerLinkActive="active">Patients</a>
         <a [routerLink]="['/dashboard', 'patient-visits']" routerLinkActive="active">Patient Visits</a>
+        <a [routerLink]="['/dashboard', 'patient-treatments']" routerLinkActive="active">Patient Treatments</a>
+        <a [routerLink]="['/dashboard', 'smile-intelligence']" routerLinkActive="active">Smile Intelligence</a>
+      } @else {
+        <a [routerLink]="['/dashboard', 'patient-treatments']" routerLinkActive="active">Patient Treatments</a>
+        <a [routerLink]="['/dashboard', 'smile-intelligence']" routerLinkActive="active">Smile Intelligence</a>
       }
     </nav>
     <button class="btn-logout" (click)="logout()">Logout</button>
@@ -35,29 +35,35 @@
         <app-home />
       }
       @case ('employees') {
-        @if (!showPatientFeatures) {
+        @if (!isPatientUser) {
           <app-employees />
         }
       }
       @case ('departments') {
-        @if (!showPatientFeatures) {
+        @if (!isPatientUser) {
           <app-departments />
         }
       }
       @case ('attendance') {
-        @if (!showPatientFeatures) {
+        @if (!isPatientUser) {
           <app-attendance />
         }
       }
       @case ('patients') {
-        @if (showPatientFeatures) {
+        @if (!isPatientUser) {
           <app-patients />
         }
       }
       @case ('patient-visits') {
-        @if (showPatientFeatures) {
+        @if (!isPatientUser) {
           <app-patient-visits />
         }
+      }
+      @case ('patient-treatments') {
+        <app-patient-treatments />
+      }
+      @case ('smile-intelligence') {
+        <app-smile-intelligence />
       }
     }
   </main>
