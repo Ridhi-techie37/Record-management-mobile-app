@@ -1,14 +1,9 @@
 /**
  * API base URL:
- * - Browser (ng serve with proxy): '' = same origin, proxy forwards /api to backend
- * - Capacitor/Android emulator: 'http://10.0.2.2:51100' = direct to backend
- * Avoids mixed-content block (HTTPS page -> HTTP API) when using proxy.
+ * - Browser and mobile builds: use live backend directly.
  */
 function getBaseUrl(): string {
-  if (typeof window !== 'undefined' && (window as any).Capacitor) {
-    return 'http://143.110.253.77:51100';
-  }
-  return '';
+  return 'https://hammerhead-app-ogh8y.ondigitalocean.app';
 }
 
 export const API_CONFIG = {
