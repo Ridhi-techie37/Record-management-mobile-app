@@ -103,12 +103,6 @@ export class Dashboard implements OnDestroy {
       this.currentView = 'patient-visits';
     } else if (path.endsWith('patients') || path.includes('/patients')) {
       this.currentView = 'patients';
-    } else if (path.endsWith('attendance') || path.includes('/attendance')) {
-      this.currentView = 'attendance';
-    } else if (path.endsWith('employees') || path.includes('/employees')) {
-      this.currentView = 'employees';
-    } else if (path.endsWith('departments') || path.includes('/departments')) {
-      this.currentView = 'departments';
     } else {
       this.currentView = 'home';
     }
