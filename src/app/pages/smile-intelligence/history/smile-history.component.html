@@ -1,27 +1,37 @@
 <div class="history-wrapper">
-  <div class="card patient-lookup-card">
-    <div class="patient-lookup-header">
-      <span class="card-icon" aria-hidden="true">&#128269;</span>
-      <div>
-        <h2>Find patient scans</h2>
-        <p>Look up smile analysis by patient ID</p>
-      </div>
+  @if (historyLoading && isPatientUser) {
+    <div class="card">
+      <p class="history-inline-loading">Loading your scans...</p>
     </div>
-    <input
-      type="number"
-      class="patient-input"
-      min="1"
-      [ngModel]="externalPatientId"
-      (input)="onPatientIdInput($event)"
-      placeholder="Enter ID (e.g. 1)"
-    />
-    <button type="button" class="btn-primary full-btn" [disabled]="historyLoading" (click)="loadHistory()">
-      {{ historyLoading ? 'Loading...' : 'Find scans' }}
-    </button>
-    @if (historyError) {
-      <p class="error">{{ historyError }}</p>
-    }
-  </div>
+  }
+
+  @if (!isPatientUser) {
+    <div class="card patient-lookup-card">
+      <div class="patient-lookup-header">
+        <span class="card-icon" aria-hidden="true">&#128269;</span>
+        <div>
+          <h2>Find patient scans</h2>
+          <p>Look up smile analysis by patient ID</p>
+        </div>
+      </div>
+      <input
+        type="number"
+        class="patient-input"
+        min="1"
+        [ngModel]="externalPatientId"
+        (input)="onPatientIdInput($event)"
+        placeholder="Enter ID (e.g. 1)"
+      />
+      <button type="button" class="btn-primary full-btn" [disabled]="historyLoading" (click)="loadHistory()">
+        {{ historyLoading ? 'Loading...' : 'Find scans' }}
+      </button>
+      @if (historyError) {
+        <p class="error">{{ historyError }}</p>
+      }
+    </div>
+  } @else if (historyError) {
+    <div class="card error-card">{{ historyError }}</div>
+  }
 
   @if (remoteScans.length > 0) {
     <div class="remote-list-header">

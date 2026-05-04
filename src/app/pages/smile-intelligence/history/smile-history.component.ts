@@ -26,6 +26,9 @@ export class SmileHistoryComponent implements OnInit {
   @Output() readonly openResult = new EventEmitter<SmileScanRecord>();
   @Output() readonly goCapture = new EventEmitter<void>();
 
+  /** Staff can search by ID; patient login is bound to their session patient only. */
+  readonly isPatientUser: boolean;
+
   externalPatientId: number | null = null;
   historyLoading = false;
   historyError = '';
@@ -44,12 +47,17 @@ export class SmileHistoryComponent implements OnInit {
     private readonly smileScanService: SmileScanService,
     private readonly scanHistory: ScanHistoryService,
     private readonly cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.isPatientUser = this.auth.isPatientUser();
+  }
 
   ngOnInit(): void {
     const fromLogin = this.auth.getLoggedInPatientId();
     if (fromLogin != null && fromLogin > 0 && this.externalPatientId == null) {
       this.externalPatientId = fromLogin;
+    }
+    if (this.isPatientUser && this.externalPatientId != null && this.externalPatientId > 0) {
+      this.loadHistory();
     }
   }
 
@@ -76,7 +84,10 @@ export class SmileHistoryComponent implements OnInit {
     this.remoteScans = [];
 
     if (!this.externalPatientId || this.externalPatientId <= 0) {
-      this.historyError = 'Please enter a valid Patient ID (> 0).';
+      this.historyError = this.isPatientUser
+        ? 'Unable to determine your patient account. Please log in again.'
+        : 'Please enter a valid Patient ID (> 0).';
+      this.cdr.detectChanges();
       return;
     }
 

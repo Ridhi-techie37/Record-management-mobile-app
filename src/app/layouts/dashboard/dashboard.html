@@ -20,6 +20,9 @@
         <a [routerLink]="['/dashboard', 'patients']" routerLinkActive="active">Patients</a>
         <a [routerLink]="['/dashboard', 'patient-visits']" routerLinkActive="active">Patient Visits</a>
         <a [routerLink]="['/dashboard', 'patient-treatments']" routerLinkActive="active">Patient Treatments</a>
+        @if (isSuperAdminUser) {
+          <a [routerLink]="['/dashboard', 'reports']" routerLinkActive="active">Report</a>
+        }
         <a [routerLink]="['/dashboard', 'smile-intelligence']" routerLinkActive="active">Smile Intelligence</a>
       } @else {
         <a [routerLink]="['/dashboard', 'patient-treatments']" routerLinkActive="active">Patient Treatments</a>
@@ -61,6 +64,11 @@
       }
       @case ('patient-treatments') {
         <app-patient-treatments />
+      }
+      @case ('reports') {
+        @if (isSuperAdminUser) {
+          <app-reports />
+        }
       }
       @case ('smile-intelligence') {
         <app-smile-intelligence />

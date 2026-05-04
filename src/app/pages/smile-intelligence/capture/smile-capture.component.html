@@ -12,17 +12,19 @@
 }
 
 <div class="content-wrapper" [class.hidden-while-loading]="loading">
-  <div class="card patient-card">
-    <div class="patient-header">
-      <span class="card-icon" aria-hidden="true">&#128100;</span>
-      <div class="patient-label-wrap">
-        <h2>Patient ID <span class="required-asterisk">*</span></h2>
-        <span class="required-badge">Required</span>
+  @if (!isPatientUser) {
+    <div class="card patient-card">
+      <div class="patient-header">
+        <span class="card-icon" aria-hidden="true">&#128100;</span>
+        <div class="patient-label-wrap">
+          <h2>Patient ID <span class="required-asterisk">*</span></h2>
+          <span class="required-badge">Required</span>
+        </div>
       </div>
+      <p class="patient-hint">Enter the patient's ID to link this scan to their record.</p>
+      <input type="number" class="patient-input" min="1" placeholder="Enter ID (e.g. 1)" [(ngModel)]="patientIdInput" />
     </div>
-    <p class="patient-hint">Enter the patient's ID to link this scan to their record.</p>
-    <input type="number" class="patient-input" min="1" placeholder="Enter ID (e.g. 1)" [(ngModel)]="patientIdInput" />
-  </div>
+  }
 
   @if (previewUrl) {
     <div class="card preview-card">

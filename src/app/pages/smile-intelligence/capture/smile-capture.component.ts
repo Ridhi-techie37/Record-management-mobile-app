@@ -45,6 +45,9 @@ export class SmileCaptureComponent implements OnInit, OnDestroy {
   @Output() readonly switchToHistory = new EventEmitter<void>();
   @Output() readonly scoreGuide = new EventEmitter<void>();
 
+  /** Staff flows show Patient ID input; patient login uses session ID only. */
+  readonly isPatientUser: boolean;
+
   patientIdInput: string | number | null = '';
   selectedImage: File | null = null;
   previewUrl: string | null = null;
@@ -71,7 +74,9 @@ export class SmileCaptureComponent implements OnInit, OnDestroy {
     private readonly smileScanService: SmileScanService,
     private readonly scanHistory: ScanHistoryService,
     private readonly cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.isPatientUser = this.auth.isPatientUser();
+  }
 
   ngOnInit(): void {
     const fromLogin = this.auth.getLoggedInPatientId();
@@ -86,6 +91,10 @@ export class SmileCaptureComponent implements OnInit, OnDestroy {
   }
 
   getPatientId(): number {
+    if (this.isPatientUser) {
+      const id = this.auth.getLoggedInPatientId();
+      return id != null && id > 0 ? id : 0;
+    }
     const raw = this.patientIdInput;
     if (raw == null) return 0;
     const normalized = String(raw).trim();
@@ -112,7 +121,9 @@ export class SmileCaptureComponent implements OnInit, OnDestroy {
   analyze(): void {
     const patientId = this.getPatientId();
     if (!patientId || patientId <= 0) {
-      this.error = 'Please enter a valid Patient ID.';
+      this.error = this.isPatientUser
+        ? 'Unable to determine your patient account. Please log in again.'
+        : 'Please enter a valid Patient ID.';
       return;
     }
     if (!this.selectedImage) {

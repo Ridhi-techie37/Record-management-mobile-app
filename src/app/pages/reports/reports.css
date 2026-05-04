@@ -1,0 +1,90 @@
+:host {
+  display: block;
+  min-height: 100px;
+}
+
+h2 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+}
+
+.filters-card {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fafafa;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.hint {
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+.type-row,
+.date-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.type-row {
+  margin-bottom: 10px;
+}
+
+select,
+input[type='date'] {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.btn-generate {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 6px;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+
+.btn-generate:hover {
+  background: #1d4ed8;
+}
+
+.error {
+  color: #e74c3c;
+}
+
+.placeholder {
+  color: #555;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #d1d5db;
+  padding: 10px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+
+.totals-row td {
+  font-weight: 700;
+  background: #f0f0f0;
+}
