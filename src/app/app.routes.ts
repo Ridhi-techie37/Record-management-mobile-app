@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 import { Dashboard } from './layouts/dashboard/dashboard';
 import { authGuard } from './guards/auth.guard';
+import { superAdminGuard } from './guards/super-admin.guard';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -12,6 +13,7 @@ export const routes: Routes = [
   { path: 'dashboard/patients', component: Dashboard, canActivate: [authGuard] },
   { path: 'dashboard/patient-visits', component: Dashboard, canActivate: [authGuard] },
   { path: 'dashboard/patient-treatments', component: Dashboard, canActivate: [authGuard] },
+  { path: 'dashboard/reports', component: Dashboard, canActivate: [authGuard, superAdminGuard] },
   { path: 'dashboard/smile-intelligence', component: Dashboard, canActivate: [authGuard] },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }

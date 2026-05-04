@@ -1,0 +1,85 @@
+<div class="reports-page">
+  <h2>Report</h2>
+
+  <div class="filters-card">
+    <p class="hint">Select report type, date range and generate report</p>
+
+    <div class="type-row">
+      <label for="reportType">Report type:</label>
+      <select id="reportType" [(ngModel)]="selectedReportType">
+        @for (type of reportTypes; track type.value) {
+          <option [value]="type.value">{{ type.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="date-row">
+      <label for="startDate">Start Date:</label>
+      <input id="startDate" type="date" [(ngModel)]="startDate" />
+
+      <label for="endDate">End Date:</label>
+      <input id="endDate" type="date" [(ngModel)]="endDate" />
+
+      <button type="button" class="btn-generate" (click)="generateReport()">Generate Report</button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <p>Loading...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else if (hasGenerated && items.length === 0) {
+    <p class="placeholder">{{ message }}</p>
+  } @else if (!hasGenerated) {
+    <p class="placeholder">{{ message }}</p>
+  } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Treatment</th>
+            @if (showColumn('count')) {
+              <th>Count</th>
+            }
+            @if (showColumn('patients')) {
+              <th>Patients</th>
+            }
+            @if (showColumn('totalIncome')) {
+              <th>Total Income</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.treatment + '-' + $index) {
+            <tr>
+              <td>{{ item.treatment }}</td>
+              @if (showColumn('count')) {
+                <td>{{ item.count }}</td>
+              }
+              @if (showColumn('patients')) {
+                <td>{{ item.patients }}</td>
+              }
+              @if (showColumn('totalIncome')) {
+                <td>{{ item.totalIncome }}</td>
+              }
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr class="totals-row">
+            <td>Total</td>
+            @if (showColumn('count')) {
+              <td>{{ sumCount }}</td>
+            }
+            @if (showColumn('patients')) {
+              <td>{{ sumPatients }}</td>
+            }
+            @if (showColumn('totalIncome')) {
+              <td>{{ sumTotalIncome }}</td>
+            }
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  }
+</div>
